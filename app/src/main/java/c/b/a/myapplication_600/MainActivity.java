@@ -21,9 +21,9 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 
 public class MainActivity extends AppCompatActivity {
-    EditText ip, user, pwd, port,show_01;
+    EditText ip, user, pwd, port,shell,show_01;
     Button ipb;
-    String buf;
+    String buf,result;
 
 
     @Override
@@ -39,18 +39,26 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             Bundle data = msg.getData();
-            String val = data.getString("value");
-            show_01.setText(buf);
+            String val = data.getString("status");
+            if(val.equals("ok")){
+                show_01.setText(result);
+                System.out.println("uuuuuuuuuuuuuuuuuuuuuuuuu"+result);
+            //    System.out.println("ppppppppppppppppppppppppppppppp");
+            }
+            else {
+                System.out.println("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+            }
+
         }
     };
 
     Runnable shellTask = new Runnable() {
         @Override
         public void run() {
-            ssh();
+            ssh(shell.getText().toString());
             Message msg = new Message();
             Bundle data = new Bundle();
-            data.putString("value", "");
+            data.putString("status", "ok");
             msg.setData(data);
             handler.sendMessage(msg);
         }
@@ -63,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         pwd = (EditText) findViewById(R.id.iped3);
         port = (EditText) findViewById(R.id.iped4);
         ipb = (Button) findViewById(R.id.ipbt1);
+        shell=(EditText)findViewById(R.id.iped5);
         show_01=(EditText)findViewById(R.id.iped6);
     }
 
@@ -77,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void ssh() {
+    public void ssh(String cmd1) {
         JSch jsch = new JSch();
-        String cmd = "ifconfig";
+        String cmd = cmd1;
         Session session = null;
         try {
             session = jsch.getSession(user.getText().toString(), ip.getText().toString(), Integer.parseInt(port.getText().toString()));
@@ -98,10 +107,12 @@ public class MainActivity extends AppCompatActivity {
             InputStream in = channelExec.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
              buf = null;
+            result="";
             StringBuffer sb = new StringBuffer();
             while ((buf = reader.readLine()) != null) {
                 sb.append(buf);
-                System.out.println(buf);
+                result+=buf+"\n";
+               // System.out.println(buf);
 
             }
             reader.close();
