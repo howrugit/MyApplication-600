@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getxml();
+        action();
     }
 
     Handler handler = new Handler() {
