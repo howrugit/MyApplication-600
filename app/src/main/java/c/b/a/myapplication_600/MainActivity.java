@@ -23,6 +23,8 @@ import java.util.Properties;
 public class MainActivity extends AppCompatActivity {
     EditText ip, user, pwd, port,show_01;
     Button ipb;
+    String buf;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
             super.handleMessage(msg);
             Bundle data = msg.getData();
             String val = data.getString("value");
+            show_01.setText(buf);
         }
     };
 
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(shellTask).start();
             }
         });
+
     }
 
 
@@ -93,11 +97,12 @@ public class MainActivity extends AppCompatActivity {
             channelExec.connect();
             InputStream in = channelExec.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
-            String buf = null;
+             buf = null;
             StringBuffer sb = new StringBuffer();
             while ((buf = reader.readLine()) != null) {
                 sb.append(buf);
                 System.out.println(buf);
+
             }
             reader.close();
             channelExec.disconnect();
