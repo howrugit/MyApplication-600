@@ -7,8 +7,11 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -20,14 +23,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class MainActivity extends AppCompatActivity {
     EditText ip, user, pwd, port,shell,show_01;
     Button ipb;
-    String buf,result;
+    String buf,result,cmdlist;
     int max;
-
+    Spinner linux1;
+    List<String> list = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +77,23 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
+    Runnable shellTask2 = new Runnable( ) {
+        @Override
+        public void run() {
+            if(linux1.getSelectedItem().toString().equals("show-ip")){
+                ssh("ifconfig | grep \"inet addr\"");
+            }
+           else if(linux1.getSelectedItem().toString().equals("show-cpu")){
+                ssh("cat /proc/cpuinfo ");
+            }
+            Message msg = new Message();
+            Bundle data = new Bundle();
+            data.putString("status", "ok");
+            msg.setData(data);
+            handler.sendMessage(msg);
+        }
+    };
+
     public void getxml(){
         ip = (EditText) findViewById(R.id.iped);
         user = (EditText) findViewById(R.id.iped2);
@@ -79,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
         ipb = (Button) findViewById(R.id.ipbt1);
         shell=(EditText)findViewById(R.id.iped5);
         show_01=(EditText)findViewById(R.id.iped6);
+        linux1=(Spinner)findViewById(R.id.spinner);
+
         //show_01.setInputType(InputType.TYPE_NULL);
     }
 
@@ -89,7 +114,24 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(shellTask).start();
             }
         });
+        list.add("show-ip");
+        list.add("show-mac");
+        list.add("show-route");
+        list.add("show-dns");
+        list.add("show-cpu");
+        list.add("show-memory");
+        linux1.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, list));
+        linux1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    new Thread(shellTask2).start();
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
 
