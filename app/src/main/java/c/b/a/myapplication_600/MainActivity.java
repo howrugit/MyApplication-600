@@ -1,9 +1,11 @@
 package c.b.a.myapplication_600;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     EditText ip, user, pwd, port,shell,show_01;
     Button ipb;
     String buf,result;
+    int max;
 
 
     @Override
@@ -42,8 +45,10 @@ public class MainActivity extends AppCompatActivity {
             String val = data.getString("status");
             if(val.equals("ok")){
                 show_01.setText(result);
-                System.out.println("uuuuuuuuuuuuuuuuuuuuuuuuu"+result);
-            //    System.out.println("ppppppppppppppppppppppppppppppp");
+                show_01.setTextSize(10);
+                //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);//强制为横屏
+                //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//竖屏
+                //System.out.println("uuuuuuuuuuuuuuuuuuuuuuuuu"+result);
             }
             else {
                 System.out.println("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
@@ -73,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         ipb = (Button) findViewById(R.id.ipbt1);
         shell=(EditText)findViewById(R.id.iped5);
         show_01=(EditText)findViewById(R.id.iped6);
+        //show_01.setInputType(InputType.TYPE_NULL);
     }
 
     public void action(){
@@ -110,8 +116,12 @@ public class MainActivity extends AppCompatActivity {
             result="";
             StringBuffer sb = new StringBuffer();
             while ((buf = reader.readLine()) != null) {
-                sb.append(buf);
-                result+=buf+"\n";
+                int max2;
+                max=buf.trim().length();
+                sb.append(buf.trim());
+                result+=buf.trim()+"\n";
+
+
                // System.out.println(buf);
 
             }
